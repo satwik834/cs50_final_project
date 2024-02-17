@@ -12,4 +12,25 @@
     <a class="nav-link active" aria-current="page" href="/register">Register</a>
 </li>
   {{message}}
+
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container1">
+    <div class="td-box">
+        <h2>Todo list</h2>
+        <div class="roww">
+            <input  id="todo-input" type="text" placeholder="Type here" name = "input">
+            <button type="submit"id = "todo-btn" class = "text-dark" onclick="add_todo();">Add</button>
+        </div>
+        <ul id = "list-container">
+            {% for todo in todos %}
+            <li class="list-itm td-itm" onclick="change_status()">{{todo[0]}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
 {% endblock %}

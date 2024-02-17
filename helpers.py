@@ -1,5 +1,7 @@
 import sqlite3
 from werkzeug.security import check_password_hash
+from flask import session,redirect
+from functools import wraps
 
 
 def signup(email,password):
@@ -14,18 +16,24 @@ def signup(email,password):
         return("email already exists")
     
 def signin(email,password):
+    return False
+
+def get_todos(id : int):
     connection  = sqlite3.connect("static\database.db")
     db = connection.cursor()
-    db.execute("SELECT * FROM users WHERE email = ?",(email,))
-    data = db.fetchall()
-    stored_hash = data[0][2]
-    if check_password_hash(stored_hash,password):
-        return True
-    else:
-        return False
+    db.execute("SELECT text FROM todos WHERE user_id = ?",(id,))
+    todos = db.fetchall()
+    return todos
 
 
 
 
 
+
+def get_userid(email):
+    connection  = sqlite3.connect("static\database.db")
+    db = connection.cursor()
+    db.execute("SELECT user_id FROM users WHERE email = ?",(email))
+    id = db.fetchall()
+    return id;
 
