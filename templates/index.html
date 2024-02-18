@@ -27,7 +27,8 @@
         </div>
         <ul id = "list-container">
             {% for todo in todos %}
-            <li class="list-itm td-itm" onclick="change_status()">{{todo[0]}}</li>
+            <li class="list-itm td-itm" onclick="change_status()">{{todo[0]}} <span id = "dlt-todo"> &times; </span></li>
+
             {% endfor %}
         </ul>
     </div>

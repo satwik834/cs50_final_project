@@ -25,7 +25,27 @@ def get_todos(id : int):
     todos = db.fetchall()
     return todos
 
+def add_todo(id,text):
+    
+    connection = sqlite3.connect("static\database.db")
+    db = connection.cursor()
+    db.execute("INSERT INTO todos(user_id,text) VALUES(?,?) ",(id,text))
+    connection.commit()   
 
+def delete_todo(id,text):
+    try:
+        connection = sqlite3.connect("static/database.db")
+        db = connection.cursor()
+
+        db.execute("DELETE FROM todos WHERE user_id = ? AND text = ?",(id,text))
+        connection.commit()
+
+        return True
+    except sqlite3.error as e:
+        print(e)
+        return False
+    finally:
+        connection.close()                                                    
 
 
 

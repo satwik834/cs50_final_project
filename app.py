@@ -1,5 +1,5 @@
-from flask import Flask, render_template,request,redirect,url_for,session
-from helpers import signup,signin,get_userid,get_todos
+from flask import Flask, render_template,request,redirect,url_for,session,jsonify
+from helpers import signup,signin,get_userid,get_todos,add_todo,delete_todo
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -68,10 +68,32 @@ def logout():
 
 
 
-@app.route("/todolist", methods = ['POST'])
+@app.route("/addtodo", methods = ['POST'])
 def todo():
-    return
-    
+    data = request.get_json()
+    task = data.get('task')
+    id = 8
+    #id = session['user_id']
+    #change 8 to the user id of the logged in user
+    add_todo(id,task)   
+    return jsonify({'message': 'Task added successfully'}),200
+
+
+
+
+@app.route("/deletetodo",methods = ['POST'])
+def delete():
+    data = request.get_json()
+    task = data.get('task')
+    id = 8
+    deleted = delete_todo(id,task)
+    if deleted:
+        return jsonify({'message': 'Task removed successfully'}),200
+    else:
+        return jsonify({'message': 'An error occurred'}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 
