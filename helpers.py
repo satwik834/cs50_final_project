@@ -16,7 +16,21 @@ def signup(email,password):
         return("email already exists")
     
 def signin(email,password):
-    return False
+    connection = sqlite3.connect("static\database.db")
+    db = connection.cursor()
+
+    db.execute("SELECT password FROM users WHERE email=?",(email,))
+
+    stored_pass = db.fetchone()
+    exists = check_password_hash(stored_pass[0],password)
+    print(stored_pass)
+    if exists:
+        return True
+    else:
+        return False
+
+
+    
 
 def get_todos(id : int):
     connection  = sqlite3.connect("static\database.db")
@@ -26,6 +40,7 @@ def get_todos(id : int):
     return todos
 
 def add_todo(id,text):
+    print(id)
     
     connection = sqlite3.connect("static\database.db")
     db = connection.cursor()
@@ -53,7 +68,21 @@ def delete_todo(id,text):
 def get_userid(email):
     connection  = sqlite3.connect("static\database.db")
     db = connection.cursor()
-    db.execute("SELECT user_id FROM users WHERE email = ?",(email))
+    db.execute("SELECT user_id FROM users WHERE email = ?",(email,))
     id = db.fetchall()
+
     return id;
+
+def login_required(f):
+    """
+    Decorate routes to require login.
+
+    http://flask.pocoo.org/docs/0.12/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
 

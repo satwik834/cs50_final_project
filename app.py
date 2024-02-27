@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request,redirect,url_for,session,jsonify
-from helpers import signup,signin,get_userid,get_todos,add_todo,delete_todo
+from helpers import *
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -11,9 +11,10 @@ app.secret_key = 'BAD_SECRET_KEY'
 
 
 @app.route("/", methods = ["GET"] )
+@login_required
 def index():
-        todos = get_todos(8)
-        return render_template("index.html",todos = todos)
+        todos = get_todos(session["user_id"][0][0])
+        return render_template("index.html",todos = todos,email = session["email"])
     
     
 
@@ -22,16 +23,18 @@ def index():
 
 @app.route("/login", methods = ["GET","POST"] )
 def login():
+    session.clear()
+
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html",message="what the fuck")
     if request.method == "POST":
          email  = request.form.get("email")
          password = request.form.get("password")
-         logged_in = signin(email,generate_password_hash(password))
+         logged_in = signin(email,password)
          if logged_in:
              session["email"] = email
              session["user_id"] = get_userid(email)
-             return redirect("/register")
+             return redirect("/")
          else:
             return render_template("login.html", messasge= "invalid email or password")
          
@@ -69,11 +72,12 @@ def logout():
 
 
 @app.route("/addtodo", methods = ['POST'])
+@login_required
 def todo():
     data = request.get_json()
     task = data.get('task')
     id = 8
-    #id = session['user_id']
+    id = session["user_id"][0][0]
     #change 8 to the user id of the logged in user
     add_todo(id,task)   
     return jsonify({'message': 'Task added successfully'}),200
@@ -82,15 +86,19 @@ def todo():
 
 
 @app.route("/deletetodo",methods = ['POST'])
+@login_required
 def delete():
     data = request.get_json()
     task = data.get('task')
-    id = 8
+    id = session["user_id"][0][0]
     deleted = delete_todo(id,task)
     if deleted:
         return jsonify({'message': 'Task removed successfully'}),200
     else:
         return jsonify({'message': 'An error occurred'}), 500
+    
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
