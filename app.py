@@ -26,7 +26,7 @@ def login():
     session.clear()
 
     if request.method == "GET":
-        return render_template("login.html",message="what the fuck")
+        return render_template("login.html")
     if request.method == "POST":
          email  = request.form.get("email")
          password = request.form.get("password")
